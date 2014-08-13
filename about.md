@@ -1,14 +1,13 @@
 ---
 layout: page
 title: About
+published: true
 ---
 
-Some information about you!
+Hello. 
 
-### More Information
-
-A place to include any other types of information that you'd like to include about yourself. 
+My name is Michael Kølleskov Gunnulfsen. I live in Oslo, which is in Norway. I like to code and play guitar.
 
 ### Contact me
 
-[email@domain.com](mailto:email@domain.com)
+[michaelgunnuflsen@gmail.com](mailto:michaelgunnulfsen@gmail.com.com)
