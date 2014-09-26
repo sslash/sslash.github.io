@@ -36,7 +36,31 @@ Time to look at an Gardr. The first thing to do is to have a look at the Gardr G
 
 Gardr-host is the script you'll want to include on your site, while gardr-ext must be (well, should be) hosted on an external domain server.
 
-Lets try them out by building a small application. We'll use yeoman just to get a quick start. Do this:
+Lets try them out by building a small application. We'll use [Yeoman](http://yeoman.io/) just to get a quick start. Do this:
+
+```bash
+npm install -g generator-webapp
+yo webapp  
+grunt serve
+```
+In app/index.html: remove all the HTML inside the body tag (but not the scripts). Then add this:
+```html
+<div class="container">
+	<div class="header">
+		<h3>My Super App</h3>
+	</div>
+	<div id="banner-container"></div>
+</div>
+```
+Okey, now lets create our own advertising banner. The way you do this, is by clicking on this link, copy and paste its content, then add it to a new file called: 
+
+
+Now we need Gardr. 
+```bash
+npm install gardr-host --save
+npm install gardr-ext --save
+```
+Time to include Gardr on our website.
 
 
 
