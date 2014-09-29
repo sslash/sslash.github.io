@@ -46,26 +46,24 @@ Lets try them out by building a small application. We'll use [Yeoman](http://yeo
 	grunt serve
     
 In app/index.html: remove all the HTML inside the body tag. Then add this:
-```html
-<div class="container">
-	<div class="header">
-		<h3>My Super App</h3>
+	<div class="container">
+		<div class="header">
+			<h3>My Super App</h3>
+		</div>
+		<div id="banner-container"></div>
 	</div>
-	<div id="banner-container"></div>
-</div>
-```
+
 Lets create our own advertising banner. The way you do this, is by clicking on this [link](https://raw.githubusercontent.com/gardr/sample-project/master/public/banners/animation/index.js), copy all, then paste it to a new file: app/banners/banner.js
 
 Now we need Gardr. 
-```
-npm install gardr-host --save
-npm install gardr-ext --save
-```
+
+	npm install gardr-host --save
+	npm install gardr-ext --save
+
 We need a way to embed Gardr into our site. I like to do this with browserify. The Yeoman app we started out from uses Grunt to build things, so lets combine these. Note that this is not a tutorial on how to build with browserify or grunt, so I'll assume you know about these things. If not, read their docs. Or not, it should be simple to follow along anyway.
 
-```
-npm install grunt-browserify --save-dev
-```
+	npm install grunt-browserify --save-dev
+
 Okey, lets add a build step. Open Gruntfile.js:
 ```javascript
 // inside grunt.initConfig, add browserify :
