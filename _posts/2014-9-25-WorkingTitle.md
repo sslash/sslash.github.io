@@ -65,117 +65,111 @@ We need a way to embed Gardr into our site. I like to do this with browserify. T
 	npm install grunt-browserify --save-dev
 
 Okey, lets add a build step. Open Gruntfile.js:
-```javascript
-// inside grunt.initConfig, add browserify :
-browserify: {
-	app : {
-		files: {
-			'<%= config.app %>/scripts/bundles/dist.js': 
-			['<%= config.app %>/scripts/main.js']
+
+	// inside grunt.initConfig, add browserify :
+	browserify: {
+		app : {
+			files: {
+				'<%= config.app %>/scripts/bundles/dist.js': 
+				['<%= config.app %>/scripts/main.js']
+			}
 		}
-	}
-},
+	},
     
-// and modify watch:js
-watch : { 
-	...
-	js: {
+	// and modify watch:js
+	watch : { 
 		...
-        files: ['<%= config.app %>/scripts/*.js'],
-  		tasks: ['jshint' ,'browserify']
-        ...
-        }
-  },
-// and modify js:hint too.
-jshint: {
-...
-all [
-'Gruntfile.js',
-'<%= config.app %>/scripts/{,*/}*.js',
-'!<%= config.app %>/scripts/vendor/*',
-'!<%= config.app %>/scripts/banners/*.js',
-'!<%= config.app %>/scripts/bundles/*.js',
-'test/spec/{,*/}*.js'
-]
-...
-}
-```
+		js: {
+			...
+        	files: ['<%= config.app %>/scripts/*.js'],
+	  		tasks: ['jshint' ,'browserify']
+    	    ...
+	        }
+	  },
+	// and modify js:hint too.
+	jshint: {
+	...
+	all [
+	'Gruntfile.js',
+	'<%= config.app %>/scripts/{,*/}*.js',
+	'!<%= config.app %>/scripts/vendor/*',
+	'!<%= config.app %>/scripts/banners/*.js',
+	'!<%= config.app %>/scripts/bundles/*.js',
+	'test/spec/{,*/}*.js'
+	]
+	...
+	}
+    
 Okey, so now we can use gardr-host. Next up is gardr-ext. Now, gardr-ext consists of an HTML template with some JavaScript. This package is supposed to live on an external domain. But for simplicity in this example, we'll just include it locally. So lets do that.
 
 We'll make our own build for this too. Create a new file called app/scripts/gardrExt.js. Open it and insert:
-```javascript
-var gardrExt = require('gardr-ext');
-gardrExt({
-    allowedDomains: ['localhost', '127.0.0.1']
-});
-```
+
+	var gardrExt = require('gardr-ext');
+	gardrExt({
+	    allowedDomains: ['localhost', '127.0.0.1']
+	});
+    
 This file initiates gardr-ext, and defines from which external domains it should allow third-party content. In our example we are just serving it up locally.
 
 Now, we need the HTML template. And we need to build gardr-ext. Add this to Gruntfile.js:
-```javascript
-// inside the copy task, add:
-copy: {[
-gardr : {
-	files: [{
-		cwd: '',
-		dest: '<%= config.app %>/scripts/banners/iframe.html',
-		src: ['node_modules/gardr-ext/iframe.html']
-	}]
-},
-...
-}]
 
-// Bundle our gardr-ext file. Add this to the browserify:app:files:
-'<%= config.app %>/scripts/banners/ext.js':
-['<%= config.app %>/scripts/gardrExt.js'],
-```
+	// inside the copy task, add:
+	copy: {[
+	gardr : {
+		files: [{
+			cwd: '',
+			dest: '<%= config.app %>/scripts/banners/iframe.html',
+			src: ['node_modules/gardr-ext/iframe.html']
+		}]
+	},
+	...
+	}]
+
+	// Bundle our gardr-ext file. Add this to the browserify:app:files:
+	'<%= config.app %>/scripts/banners/ext.js':
+	['<%= config.app %>/scripts/gardrExt.js'],
+
 Note that I only define our development build steps. You should incorporate this into your production build too. Also, note that we put iframe.html in the same directory as ext.js (yes, HTML in our JS folder. Bad karma.). This is mandatory. 
 
 Finally. add the following tasks to our execution step:
 
-```javascript
-// in grunt.registerTask('serve'), add it to the task list:
-grunt.task.run({
-...
-'browserify',
-'copy:gardr'
-})
-```
-
+	// in grunt.registerTask('serve'), add it to the task list:
+	grunt.task.run({
+	...
+	'browserify',
+	'copy:gardr'
+	})
 
 **Finished with the setups! Now lets get down to biz.**
 
 Like many beautifull Norwegian newsite apps does, we want our beautifull animated banner right below our header. To do this, we use gardr. So, modify our app/scripts/main.js like this:
 
-```javascript
-'use strict';
-var gardrHost = require('gardr-host');
+	'use strict';
+	var gardrHost = require('gardr-host');
 
-$(function() {
+	$(function() {
 
-    var bannerBaseUrl = 'http://127.0.0.1:9000/scripts/banners/';
-    var gardr = gardrHost({
-        iframeUrl: 'http://127.0.0.1:9000/scripts/banners/iframe.html'
-    });
+ 	   var bannerBaseUrl = 'http://127.0.0.1:9000/scripts/banners/';
+  	   var gardr = gardrHost({
+  	      iframeUrl: 'http://127.0.0.1:9000/scripts/banners/iframe.html'
+   	 });
 
-    gardr.queue('top-banner', {
-        url : bannerBaseUrl + 'banner.js',
-        height: '300px',
-        container : 'banner-container'
-    });
+   	 gardr.queue('top-banner', {
+    	    url : bannerBaseUrl + 'banner.js',
+     	   height: '300px',
+     	   container : 'banner-container'
+    	});
 
     gardr.render('top-banner');
-});
-```
-And finally, change script tag for the main.js file in index.html to be:
-```html
-<script src="scripts/bundles/dist.js"></script>
-```
+	});
 
-run 
-```
-grunt serve
-```
+And finally, change script tag for the main.js file in index.html to be:
+
+	<script src="scripts/bundles/dist.js"></script>
+
+Now run 
+
+	grunt serve
 
 Voila. Beautifull webapp with banner.
 
