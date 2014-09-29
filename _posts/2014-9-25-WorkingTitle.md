@@ -1,5 +1,7 @@
 ---
 published: true
+layout: post
+title: You're up and running!
 ---
 
 Embedding advertising content on your website is an extensive task. Especially if you want to do it properly. Which you should of course, considering the vast amount of banner-content that lives on the Web today. The majority of advertising producers has started to acknowledge the fact that **Flash is dying**. This has introduced us to a new generation of (banner) content made with HTML5 and its related technologies. A potential pitfall here is that banners are no longer safely hidden away in a Flash container, but instead, live side by side with our belowed HTML page. This can lead to problems. 
