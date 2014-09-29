@@ -38,7 +38,7 @@ Gardr-host is the script you'll want to include on your site, while gardr-ext mu
 
 Lets try them out by building a small application. We'll use [Yeoman](http://yeoman.io/) just to get a quick start. [This](https://github.com/yeoman/generator-webapp) yeoman scaffolding pack includes a simple node-based webapp. It has more stuff then we would need for this simple example, but I am too lazy to create this myself. So now,  do this:
 
-```bash
+```
 npm install -g generator-webapp
 yo webapp  
 grunt serve
@@ -55,13 +55,13 @@ In app/index.html: remove all the HTML inside the body tag. Then add this:
 Lets create our own advertising banner. The way you do this, is by clicking on this [link](https://raw.githubusercontent.com/gardr/sample-project/master/public/banners/animation/index.js), copy all, then paste it to a new file: app/banners/banner.js
 
 Now we need Gardr. 
-```bash
+```
 npm install gardr-host --save
 npm install gardr-ext --save
 ```
 We need a way to embed Gardr into our site. I like to do this with browserify. The Yeoman app we started out from uses Grunt to build things, so lets combine these. Note that this is not a tutorial on how to build with browserify or grunt, so I'll assume you know about these things. If not, read their docs. Or not, it should be simple to follow along anyway.
 
-```bash
+```
 npm install grunt-browserify --save-dev
 ```
 Okey, lets add a build step. Open Gruntfile.js:
@@ -173,7 +173,7 @@ And finally, change script tag for the main.js file in index.html to be:
 ```
 
 run 
-```bash
+```
 grunt serve
 ```
 
