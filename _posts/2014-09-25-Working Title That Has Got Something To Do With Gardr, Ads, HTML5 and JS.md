@@ -2,13 +2,13 @@
 published: true
 ---
 
-Embedding advertising content on your website is an extensive task. Especially if you want to do it properly. Which you should of course, considering the vast amount of banner-content that lives on the Web today. The majority of advertising producers has started to acknowledge the fact that **Flash is dying**. This has introduced us to a new generation of (banner) content; namely HTML5. A potential pitfall here is that banners are no longer safely hidden away in a Flash container, but instead, live side by side with our belowed HTML page. This can lead to problems. 
+Embedding advertising content on your website is an extensive task. Especially if you want to do it properly. Which you should of course, considering the vast amount of banner-content that lives on the Web today. The majority of advertising producers has started to acknowledge the fact that **Flash is dying**. This has introduced us to a new generation of (banner) content made with HTML5 and its related technologies. A potential pitfall here is that banners are no longer safely hidden away in a Flash container, but instead, live side by side with our belowed HTML page. This can lead to problems. 
 
-In this article we will look at challenges with third-party content, and discuss  a sollution to these problems. A new ecosystem has emerged as a result of the new HTML5 banner generation. **We have named it Gardr**.
+In this article we will look at challenges with third-party content, and discuss  one solution in particular. A new ecosystem has emerged as a result of the new HTML5 banner generation. **We have named it Gardr**.
 
 ## The Challenge With Third-party Stuff...
 
-Many developers have a weird relationship to front-end development. JavaScript in particular. Weirdness being overuse of copy-and-paste. Integrity to include gigantic third party libs simply in order to use one tiny feature from it. And also, many people seems to dislike JavaScript, thinking it is just a silly language that lacks proper features. Or that it is no need to learn it, because you can usually quickly google your way into the code-snippet you are looking for. This might have some unfortunate outcomes. Especially when such developers builds stuff that ends up inside an advertising container on your website. Imagine an advertising banner that accidentally changes global styling, or overrides global JavaScript objects. 
+Many developers have a weird relationship to front-end development. JavaScript in particular. Weirdness being overuse of copy-and-paste, integrity to include gigantic third party libs simply in order to use one tiny feature from it, or even ignorance to browser inconsistencies. Also, many people seems to dislike JavaScript, thinking it is just a silly language that lacks proper features. Or that there is no need to learn it, because you can usually quickly google your way into the code-snippet you are looking for. This might have some unfortunate outcomes. Especially when such developers builds stuff that ends up inside an advertising container on your website. Imagine an advertising banner that accidentally changes global styling, or overrides global JavaScript objects. 
 
 Very often advertising content is rendered inside frames. But because this solution affects the critical rendering path, many people choose to create friendly iframes. That way, advertising content can load in parallel with the rest of the async stuff on your site. However, this approach does not protect your website, because the ads can still access its parent DOM through the iframe.
 
@@ -16,12 +16,12 @@ Very often advertising content is rendered inside frames. But because this solut
 
 So what are the requirements for the perfect way to embed third-party advertising content? 
      1. Don't let banners be bart of the critical rendering path. Banners must 	   render after the page has rendered so that domready can trigger early.
-     2. Banner content should not be able to easily access our site's DOM. 
+     2. Banner content should not be able to directly access our site's DOM. 
      3. It should be possible to have some sort of communication between the third-party content, and the host site. 
 
 ## Introducing Gardr.
 
-At Finn.no, we have implemented a solution to this problem. Gardr. Gardr is a Javascript library that is executed after the DOM is ready. It creates an iframe on all the container positions you have chosen, and sets the iframe's source url to an HTML template that is hosted on an **external domain**. This way, the third-party banner has no access to its parent site due to **cross-domain restrictions**. The external HTML template embeds a **gardr-ext** script. This script will document write another script tag with the advertising banner's script URL. As a result, the third-party script has been bootstrapped safely inside a cross-domain iframe. Async-wise. 
+At Finn.no, we have implemented a solution to this problem. Gardr. Gardr is a JavaScript library that is executed after the DOM is ready. It creates an iframe on all the container positions you have chosen, and sets the iframe's source url to an HTML template that is hosted on an **external domain**. This way, the third-party banner has no access to its parent site due to **cross-domain restrictions**. The external HTML template embeds a **gardr-ext** script. This script will document write another script tag with the advertising banner's script URL. As a result, the third-party script has been bootstrapped safely inside a cross-domain iframe. Async-wise. 
 
 In addition, Gardr offers a plugin API, so that plugins can be built to alter the behavior of the way the banner is rendered. And communicate safely with the host site. And do whatever else you would like your banner to do in order to cooperate with the site. Or the opposite.
 
@@ -34,7 +34,7 @@ Time to look at an Gardr. The first thing to do is to have a look at the Gardr G
 
 Gardr-host is the script you'll want to include on your site, while gardr-ext must be (well, should be) hosted on an external domain server.
 
-Lets try them out by building a small application. We'll use [Yeoman](http://yeoman.io/) just to get a quick start. Do this:
+Lets try them out by building a small application. We'll use [Yeoman](http://yeoman.io/) just to get a quick start. [This](https://github.com/yeoman/generator-webapp) yeoman scaffolding pack includes a simple node-based webapp. It has more stuff then we would need for this simple example, but I am too lazy to create this myself. So now,  do this:
 
 ```bash
 npm install -g generator-webapp
@@ -50,7 +50,7 @@ In app/index.html: remove all the HTML inside the body tag. Then add this:
 	<div id="banner-container"></div>
 </div>
 ```
-Okey, now lets create our own advertising banner. The way you do this, is by clicking on this [link](https://raw.githubusercontent.com/gardr/sample-project/master/public/banners/animation/index.js), copy all, then paste it to a new you name: app/banners/banner.js
+Lets create our own advertising banner. The way you do this, is by clicking on this [link](https://raw.githubusercontent.com/gardr/sample-project/master/public/banners/animation/index.js), copy all, then paste it to a new file: app/banners/banner.js
 
 Now we need Gardr. 
 ```bash
@@ -79,7 +79,7 @@ watch : {
 	...
 	js: {
 		...
-        files: ['<%= config.app %>/scripts/**.js'],
+        files: ['<%= config.app %>/scripts/*.js'],
   		tasks: ['jshint' ,'browserify']
         ...
         }
@@ -100,14 +100,16 @@ all [
 ```
 Okey, so now we can use gardr-host. Next up is gardr-ext. Now, gardr-ext consists of an HTML template with some JavaScript. This package is supposed to live on an external domain. But for simplicity in this example, we'll just include it locally. So lets do that.
 
-We'll make our own build for this too. Create a new file called app/scripts/gardrExt.js. Open it and do:
+We'll make our own build for this too. Create a new file called app/scripts/gardrExt.js. Open it and insert:
 ```javascript
 var gardrExt = require('gardr-ext');
 gardrExt({
     allowedDomains: ['localhost', '127.0.0.1']
 });
 ```
-Now, we need the HTML template. Add this to Gruntfile.js:
+This file initiates gardr-ext, and defines from which external domains it should allow third-party content. In our example we are just serving it up locally.
+
+Now, we need the HTML template. And we need to build gardr-ext. Add this to Gruntfile.js:
 ```javascript
 // inside the copy task, add:
 copy: {[
@@ -121,17 +123,23 @@ gardr : {
 ...
 }]
 
-// in grunt.registerTask('serve'), add it to the task list:
-grunt.task.run({
-...
-'copy:gardr'
-})
-
-// And finally we need to bundle our gardr-ext file. Add this to the browserify:app:files:
+// Bundle our gardr-ext file. Add this to the browserify:app:files:
 '<%= config.app %>/scripts/banners/ext.js':
 ['<%= config.app %>/scripts/gardrExt.js'],
 ```
-Note that I only add it to the development build. You should incorporate this into your dist build step too.
+Note that I only define our development build steps. You should incorporate this into your production build too. Also, note that we put iframe.html in the same directory as ext.js (yes, HTML in our JS folder. Bad karma.). This is mandatory. 
+
+Finally. add the following tasks to our execution step:
+
+```javascript
+// in grunt.registerTask('serve'), add it to the task list:
+grunt.task.run({
+...
+'browserify',
+'copy:gardr'
+})
+```
+
 
 **Finished with the setups! Now lets get down to biz.**
 
@@ -145,7 +153,7 @@ $(function() {
 
     var bannerBaseUrl = 'http://127.0.0.1:9000/scripts/banners/';
     var gardr = gardrHost({
-        iframeUrl: bannerBaseUrl + 'iframe.html' // this should be cross-domain
+        iframeUrl: 'http://127.0.0.1:9000/scripts/banners/iframe.html'
     });
 
     gardr.queue('top-banner', {
@@ -167,12 +175,12 @@ run
 grunt serve
 ```
 
-Voila. Beautifull web app with banner.
+Voila. Beautifull webapp with banner.
 
 
 ## Summary
 
-We have looked at an efficient and safe plug-n-play solution to embedding ads and other third party content. We'we had great success with this on Finn.no. Hopefully more people will start using this. 
+In this article we have looked at an efficient and safe (almost plug-n-play) solution to embedding ads and other third party content. We have had great success with this on Finn.no. Hopefully more people will start using this.  
 
 
 What's next
